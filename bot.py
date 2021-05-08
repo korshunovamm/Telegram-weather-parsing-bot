@@ -52,7 +52,7 @@ def keyboard_get_weather_of_day(message):
     key_day_5 = types.InlineKeyboardButton(text='Погода на день', callback_data="day5")
     keyboard.add(key_day_5)
 
-    key_day_6 = types.InlineKeyboardButton(text='Погода на день', callback_data="day"6)
+    key_day_6 = types.InlineKeyboardButton(text='Погода на день', callback_data="day6")
     keyboard.add(key_day_6)
 
     key_day_7 = types.InlineKeyboardButton(text='Погода на день', callback_data="day7")
