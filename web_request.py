@@ -39,5 +39,5 @@ class Parser:
 # t1 = time.time()
 # t2 = time.time()
 # print("Time of execution: ", t2 - t1)
-print(Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_week())
-print(Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day(1, 2))
+# print(Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_week())
+# print(Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day(1, 2))

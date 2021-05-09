@@ -23,17 +23,20 @@ def callback_worker(call):
         bot.send_message(call.message.chat.id, parser)
 
 
+@bot.message_handler(commands=['get_weather'])
 def keyboard_get_weather(message):
     keyboard = types.InlineKeyboardMarkup()
 
-    key_week_weather = types.InlineKeyboardButton(text='Погода на неделю', callback_data='week')
+    key_week_weather = types.InlineKeyboardButton(text='Погода на неделю', callback_data='week', switch_inline_query="Telegram")
     keyboard.add(key_week_weather)  # добавляем кнопку в клавиатуру
 
     key_day_weather = types.InlineKeyboardButton(text='Погода на день', callback_data="day")
     keyboard.add(key_day_weather)
 
-    bot.send_message(message.from_user.id, text='Выб', reply_markup=keyboard)
+    bot.send_message(message.from_user.id, text='Выбрать погоду', reply_markup=keyboard)
 
+
+@bot.message_handler(commands=['get_weather_of_day'])
 def keyboard_get_weather_of_day(message):
     keyboard = types.InlineKeyboardMarkup()
 
@@ -59,6 +62,14 @@ def keyboard_get_weather_of_day(message):
     keyboard.add(key_day_7)
 
     bot.send_message(message.from_user.id, text='Выб', reply_markup=keyboard)
+
+
+@bot.message_handler(commands=['url'])
+def url(message):
+    markup = types.InlineKeyboardMarkup()
+    btn_my_site = types.InlineKeyboardButton(text='Наш сайт', url='https://www.meteoservice.ru/weather/week/moskva')
+    markup.add(btn_my_site)
+    bot.send_message(message.chat.id, "Нажми на кнопку и перейди на наш сайт.", reply_markup=markup)
 
 
 while True:
