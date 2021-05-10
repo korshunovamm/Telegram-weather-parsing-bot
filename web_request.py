@@ -82,7 +82,7 @@ class Parser:
             list_wind = item.text.replace("  ", '').replace("\n", '').replace("Ветер", '').split("м/с")
             list_wind_describe = ["Ветер ночью: ", "Ветер утром: ",
                                   "Ветер днем: ", "Ветер вечером: "]
-            list_day_wind = [list_wind[i]
+            list_day_wind = [list_wind[i] + "м/с"
                              for i in range(len(list_wind))
                              if list_wind[i] != '' and i % 2 != 0]
             weather_day_wind.append([list_wind_describe[i] + list_day_wind[i] for i in range(4)])

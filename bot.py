@@ -18,10 +18,15 @@ def callback_worker(call):
         bot.send_message(call.message.chat.id, str_week)
     else:
         number_day = int(call.data)
-        str_day = f'{day[1][number_day]},{day[2][number_day]},{day[3][number_day]}'
-        str_format = str_day.replace("'", '').replace(',', '\n').replace(']', '\n').replace('[', '\n')
-        bot.send_message(call.message.chat.id,
-                         f'{day[0][number_day]}\n{str_format}')
+        if isinstance(day, list):
+            str_day = f'{day[1][number_day]},{day[2][number_day]},{day[3][number_day]}'
+            str_format = str_day.replace("'", '').replace(',', '\n').replace(']', '\n').replace('[', '\n')
+            bot.send_message(call.message.chat.id,
+                             f'{day[0][number_day]}\n{str_format}')
+        else:
+            str_format = 'сайт упал, подождите какое-то время'
+            bot.send_message(call.message.chat.id, str_format)
+
 
 
 def parser_days_of_week():
@@ -41,13 +46,12 @@ def keyboard_get_weather_of_day(message):
     key_week_weather = types.InlineKeyboardButton(text='Погода на неделю', callback_data='week')
     key_day_0 = types.InlineKeyboardButton(text='Погода на сегодня', callback_data="0")
     key_day_1 = types.InlineKeyboardButton(text='Погода на завтра', callback_data="1")
-    keyboard.add(key_day_0)
-
-    keyboard.add(key_day_1)
+    keyboard.add(key_day_0, key_day_1)
 
     for i in range(2, 6):
         key_day = types.InlineKeyboardButton(text=day[0][i], callback_data=f"{i}")
         keyboard.add(key_day)
+
     keyboard.add(key_week_weather)
 
     bot.send_message(chat_id=message.chat.id, text='Выбрать период', reply_markup=keyboard)
@@ -66,10 +70,7 @@ def url(message):
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     if message.text.lower() == 'привет':
-        bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!\n'
-                                          f'Вот некоторые команды для работы с ботом:\n'
-                                          f'/url - сайт погоды\n'
-                                          f'/weather - узнать погоду\n')
+        bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!\n')
     elif message.text.lower() == '/start':
         bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!\n'
                                           f'Вот некоторые команды для работы с ботом:\n'
