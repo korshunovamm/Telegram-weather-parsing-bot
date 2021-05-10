@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from itertools import cycle
 
 
 class Parser:
@@ -9,15 +8,21 @@ class Parser:
         headers = [
             {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:45.0) Gecko/20100101 Firefox/45.0'},
             {
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.111 YaBrowser/21.2.1.94 (beta) Yowser/2.5 Safari/537.36'},
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+                              ' (KHTML, like Gecko) Chrome/88.0.4324.111 YaBrowser/21.2.1.94 (beta)'
+                              ' Yowser/2.5 Safari/537.36'},
             {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'},
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko)'
+                              ' Chrome/88.0.4324.146 Safari/537.36'},
             {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'},
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 '
+                              '(KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'},
             {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'},
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)'
+                              ' Chrome/87.0.4280.141 Safari/537.36'},
             {
-                'User_Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'}
+                'User_Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 '
+                              '(KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'}
         ]
 
         response = requests.get(self.url, headers=headers[3])
@@ -47,7 +52,7 @@ class Parser:
         for item in describe_day:
             if item:
                 weather_day_date.append(item.text)
-                #print(item.text)
+                # print(item.text)
 
         describe_temperature = self.soup.find_all(["tr"], {"class": ["temperature"]})
         for item in describe_temperature:
@@ -82,17 +87,4 @@ class Parser:
                              if list_wind[i] != '' and i % 2 != 0]
             weather_day_wind.append([list_wind_describe[i] + list_day_wind[i] for i in range(4)])
 
-        # print(weather_day_date)
-        # print(weather_day_temperature)
-        # print(weather_day_feeled_temperature)
-        # print(weather_day_wind)
         return [weather_day_date, weather_day_temperature, weather_day_feeled_temperature, weather_day_wind]
-
-
-# print(Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_week())
-#Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day()
-
-try:
-    Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day()
-except Exception as e:
-    print("Error occured: ", e)

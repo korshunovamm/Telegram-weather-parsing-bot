@@ -5,71 +5,73 @@ from web_request import Parser
 bot = telebot.TeleBot('1878148758:AAF23aybi5Ss0eUR4etsvI6ttFVq1ptAL04')
 
 
-@bot.message_handler(content_types=['text'])
-def get_text_messages(message):
-    if message.text.lower() == 'привет':
-        bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}')
-    else:
-        bot.send_message(message.from_user.id, 'Не понимаю, что это значит.')
-
-
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
     if call.data == "week":  # call.data это callback_data, которую мы указали при объявлении кнопки
-        parser = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_week()
-        bot.send_message(call.message.chat.id, parser)
-    elif call.data == "day":
-        parser = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day(1, 2)
-        bot.send_message(call.message.chat.id, parser)
+        try:
+            week = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_week()
+            str_week = ''
+            for key, value in week.items():
+                str_week += key + "\n" + value + "\n\n"
+        except Exception as e:
+            str_week = e
+        bot.send_message(call.message.chat.id, str_week)
+    else:
+        number_day = int(call.data)
+        str_day = f'{day[1][number_day]},{day[2][number_day]},{day[3][number_day]}'
+        str_format = str_day.replace("'", '').replace(',', '\n').replace(']', '\n').replace('[', '\n')
+        bot.send_message(call.message.chat.id,
+                         f'{day[0][number_day]}\n{str_format}')
 
 
-@bot.message_handler(commands=['get_weather'])
-def keyboard_get_weather(message):
-    keyboard = types.InlineKeyboardMarkup()
-
-    key_week_weather = types.InlineKeyboardButton(text='Погода на неделю', callback_data='week', switch_inline_query="Telegram")
-    keyboard.add(key_week_weather)  # добавляем кнопку в клавиатуру
-
-    key_day_weather = types.InlineKeyboardButton(text='Погода на день', callback_data="day")
-    keyboard.add(key_day_weather)
-
-    bot.send_message(message.from_user.id, text='Выбрать погоду', reply_markup=keyboard)
+def parser_days_of_week():
+    try:
+        list_of_days = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day()
+    except Exception as e:
+        list_of_days = e
+    return list_of_days
 
 
-@bot.message_handler(commands=['get_weather_of_day'])
+day = parser_days_of_week()
+
+
+@bot.message_handler(commands=['weather'])
 def keyboard_get_weather_of_day(message):
     keyboard = types.InlineKeyboardMarkup()
+    key_week_weather = types.InlineKeyboardButton(text='Погода на неделю', callback_data='week')
+    key_day_0 = types.InlineKeyboardButton(text='Погода на сегодня', callback_data="0")
+    key_day_1 = types.InlineKeyboardButton(text='Погода на завтра', callback_data="1")
+    keyboard.add(key_day_0)
 
-    key_day_1 = types.InlineKeyboardButton(text='Погода на сегодня', callback_data="day1")
     keyboard.add(key_day_1)
 
-    key_day_2 = types.InlineKeyboardButton(text='Погода на завтра', callback_data="day2")
-    keyboard.add(key_day_2)
+    for i in range(2, 6):
+        key_day = types.InlineKeyboardButton(text=day[0][i], callback_data=f"{i}")
+        keyboard.add(key_day)
+    keyboard.add(key_week_weather)
 
-    key_day_3 = types.InlineKeyboardButton(text='Погода на день', callback_data="day3")
-    keyboard.add(key_day_3)
-
-    key_day_4 = types.InlineKeyboardButton(text='Погода на день', callback_data="day4")
-    keyboard.add(key_day_4)
-
-    key_day_5 = types.InlineKeyboardButton(text='Погода на день', callback_data="day5")
-    keyboard.add(key_day_5)
-
-    key_day_6 = types.InlineKeyboardButton(text='Погода на день', callback_data="day6")
-    keyboard.add(key_day_6)
-
-    key_day_7 = types.InlineKeyboardButton(text='Погода на день', callback_data="day7")
-    keyboard.add(key_day_7)
-
-    bot.send_message(message.from_user.id, text='Выб', reply_markup=keyboard)
+    bot.send_message(chat_id=message.chat.id, text='Выбрать период', reply_markup=keyboard)
 
 
 @bot.message_handler(commands=['url'])
 def url(message):
     markup = types.InlineKeyboardMarkup()
-    btn_my_site = types.InlineKeyboardButton(text='Наш сайт', url='https://www.meteoservice.ru/weather/week/moskva')
+    btn_my_site = types.InlineKeyboardButton(text='Наш сайт',
+                                             url='https://www.meteoservice.ru/weather/week/moskva',
+                                             callback_data='url')
     markup.add(btn_my_site)
     bot.send_message(message.chat.id, "Нажми на кнопку и перейди на наш сайт.", reply_markup=markup)
+
+
+@bot.message_handler(content_types=['text'])
+def get_text_messages(message):
+    if message.text.lower() == 'привет':
+        bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!\n'
+                                          f'Вот некоторые команды для работы с ботом:\n'
+                                          f'/url - наш сайт\n'
+                                          f'/weather - узнать погоду\n')
+    else:
+        bot.send_message(message.from_user.id, 'Не понимаю, что это значит.')
 
 
 while True:
