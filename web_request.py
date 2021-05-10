@@ -29,7 +29,7 @@ class Parser:
         response.encoding = "utf-8"
         self.html = response.text
         self.soup = BeautifulSoup(self.html, "lxml")
-        with open("file.html", "w") as file:
+        with open("media/file.html", "w") as file:
             file.write(self.html)
 
     def find_weather_week(self):
