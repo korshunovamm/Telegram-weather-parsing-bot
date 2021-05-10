@@ -65,17 +65,21 @@ def url(message):
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    if message.text.lower() == 'привет':
+    if message.text.lower() == 'привет' or message.text.lower() == '/start':
         bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!\n'
                                           f'Вот некоторые команды для работы с ботом:\n'
-                                          f'/url - наш сайт\n'
+                                          f'/url - сайт погоды\n'
                                           f'/weather - узнать погоду\n')
     else:
         bot.send_message(message.from_user.id, 'Не понимаю, что это значит.')
 
 
-while True:
-    try:
-        bot.polling(none_stop=True, interval=0)
-    except Exception:
-        pass
+try:
+    bot.polling(none_stop=True, interval=0)
+except telegram.error.Conflict:
+    print("ERROR")
+# while True:
+#     try:
+#         bot.polling(none_stop=True, interval=0)
+#     except Exception:
+#         pass
