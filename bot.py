@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 from web_request import Parser
 
-bot = telebot.TeleBot('1878148758:AAF23aybi5Ss0eUR4etsvI6ttFVq1ptAL04')
+bot = telebot.TeleBot('1800951201:AAGQhthVpv5UBnQzlyqiu59zCDlFmAf3IQA')
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -65,7 +65,12 @@ def url(message):
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    if message.text.lower() == 'привет' or message.text.lower() == '/start':
+    if message.text.lower() == 'привет':
+        bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!\n'
+                                          f'Вот некоторые команды для работы с ботом:\n'
+                                          f'/url - сайт погоды\n'
+                                          f'/weather - узнать погоду\n')
+    elif message.text.lower() == '/start':
         bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!\n'
                                           f'Вот некоторые команды для работы с ботом:\n'
                                           f'/url - сайт погоды\n'
@@ -74,10 +79,6 @@ def get_text_messages(message):
         bot.send_message(message.from_user.id, 'Не понимаю, что это значит.')
 
 
-# try:
-#     bot.polling(none_stop=True, interval=0)
-# except telegram.error.Conflict:
-#     print("ERROR")
 while True:
     try:
         bot.polling(none_stop=True, interval=0)

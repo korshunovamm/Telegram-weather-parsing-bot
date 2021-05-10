@@ -88,3 +88,10 @@ class Parser:
             weather_day_wind.append([list_wind_describe[i] + list_day_wind[i] for i in range(4)])
 
         return [weather_day_date, weather_day_temperature, weather_day_feeled_temperature, weather_day_wind]
+
+#
+# try:
+#     list_of_dayss = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day()
+# except Exception as e:
+#     list_of_dayss = e
+# print(list_of_dayss)
