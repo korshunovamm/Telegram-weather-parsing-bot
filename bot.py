@@ -7,6 +7,7 @@ from web_request import Parser
 
 
 bot = telebot.TeleBot('меня сложно найти, легко потерять')
+url_site = 'https://www.meteoservice.ru/weather/week/moskva'
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -14,10 +15,10 @@ def callback_worker(call):
     day = parser_days_of_week()
     if call.data == "week":  # call.data это callback_data, которую мы указали при объявлении кнопки
         try:
-            week = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_week()
+            week = Parser(url_site).find_weather_week()
             str_week = ''
             for key, value in week.items():
-                str_week += key + "\n" + value + "\n\n"
+                str_week += f'{str_week} {key}\n{value}\n\n'
         except Exception as e:
             str_week = e
         bot.send_message(call.message.chat.id, str_week)
@@ -35,7 +36,7 @@ def callback_worker(call):
 
 def parser_days_of_week():
     try:
-        list_of_days = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day()
+        list_of_days = Parser(url_site).find_weather_day()
         return list_of_days
     except Exception as e:
         print("ERROR: ", e)
@@ -64,7 +65,7 @@ def keyboard_get_weather_of_day(message):
 def url(message):
     markup = telebot.types.InlineKeyboardMarkup()
     btn_my_site = telebot.types.InlineKeyboardButton(text='Наш сайт',
-                                                     url='https://www.meteoservice.ru/weather/week/moskva',
+                                                     url=url_site,
                                                      callback_data='url')
     markup.add(btn_my_site)
     bot.send_message(message.chat.id, "Нажми на кнопку и перейди на наш сайт.", reply_markup=markup)
