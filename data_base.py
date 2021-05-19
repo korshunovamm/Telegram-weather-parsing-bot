@@ -3,7 +3,7 @@ import peewee
 db = peewee.SqliteDatabase('weather_last_week.db')  # БД для сайта
 
 """
-Файл иницализирует базы данных сайта 
+Файл иницализирует базы данных сайта
 """
 
 
