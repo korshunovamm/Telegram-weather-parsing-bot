@@ -3,5 +3,5 @@ django-scheduler~=0.9.3
 peewee~=3.14.4
 requests~=2.25.1
 beautifulsoup4~=4.9.3
-pyTelegramBotAPI
 lxml
+pyTelegramBotAPI
