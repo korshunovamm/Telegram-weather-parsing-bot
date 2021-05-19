@@ -1,12 +1,17 @@
 import telebot
-from telebot import types
+import threading
+import time
+import schedule
+from config_data_base import update_db
 from web_request import Parser
+
 
 bot = telebot.TeleBot('1800951201:AAGQhthVpv5UBnQzlyqiu59zCDlFmAf3IQA')
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
+    day = parser_days_of_week()
     if call.data == "week":  # call.data это callback_data, которую мы указали при объявлении кнопки
         try:
             week = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_week()
@@ -28,28 +33,26 @@ def callback_worker(call):
             bot.send_message(call.message.chat.id, str_format)
 
 
-
 def parser_days_of_week():
     try:
         list_of_days = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day()
+        return list_of_days
     except Exception as e:
-        list_of_days = e
-    return list_of_days
-
-
-day = parser_days_of_week()
+        print("ERROR: ", e)
+        return 0
 
 
 @bot.message_handler(commands=['weather'])
 def keyboard_get_weather_of_day(message):
-    keyboard = types.InlineKeyboardMarkup()
-    key_week_weather = types.InlineKeyboardButton(text='Погода на неделю', callback_data='week')
-    key_day_0 = types.InlineKeyboardButton(text='Погода на сегодня', callback_data="0")
-    key_day_1 = types.InlineKeyboardButton(text='Погода на завтра', callback_data="1")
+    day = parser_days_of_week()
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    key_week_weather = telebot.types.InlineKeyboardButton(text='Погода на неделю', callback_data='week')
+    key_day_0 = telebot.types.InlineKeyboardButton(text='Погода на сегодня', callback_data="0")
+    key_day_1 = telebot.types.InlineKeyboardButton(text='Погода на завтра', callback_data="1")
     keyboard.add(key_day_0, key_day_1)
 
     for i in range(2, 6):
-        key_day = types.InlineKeyboardButton(text=day[0][i], callback_data=f"{i}")
+        key_day = telebot.types.InlineKeyboardButton(text=day[0][i], callback_data=f"{i}")
         keyboard.add(key_day)
 
     keyboard.add(key_week_weather)
@@ -59,10 +62,10 @@ def keyboard_get_weather_of_day(message):
 
 @bot.message_handler(commands=['url'])
 def url(message):
-    markup = types.InlineKeyboardMarkup()
-    btn_my_site = types.InlineKeyboardButton(text='Наш сайт',
-                                             url='https://www.meteoservice.ru/weather/week/moskva',
-                                             callback_data='url')
+    markup = telebot.types.InlineKeyboardMarkup()
+    btn_my_site = telebot.types.InlineKeyboardButton(text='Наш сайт',
+                                                     url='https://www.meteoservice.ru/weather/week/moskva',
+                                                     callback_data='url')
     markup.add(btn_my_site)
     bot.send_message(message.chat.id, "Нажми на кнопку и перейди на наш сайт.", reply_markup=markup)
 
@@ -80,8 +83,25 @@ def get_text_messages(message):
         bot.send_message(message.from_user.id, 'Не понимаю, что это значит.')
 
 
-while True:
-    try:
-        bot.polling(none_stop=True, interval=0)
-    except Exception:
-        pass
+def threaded_func(func, *args):
+    """
+    Загоняет функцию в поток.
+    :param func: функция для исполнения в отдельном потоке
+    :param args: аргументы функции
+    """
+    thread = threading.Thread(target=func, args=args)
+    thread.start()  # выполняем функцию
+    thread.join()  # закрываем поток
+
+
+# запускаем бота в отдельном потоке
+bot_thread = threading.Thread(target=bot.polling)
+bot_thread.start()
+# каждый день обновляется бд в отдельном потоке
+schedule.every().day.at("00:05").do(threaded_func, update_db)
+# Многопоточность используется чтобы не останавливать
+# бота для обновления бд погоды
+if __name__ == '__main__':
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

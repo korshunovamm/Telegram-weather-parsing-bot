@@ -33,6 +33,7 @@ class Parser:
             file.write(self.html)
 
     def find_weather_week(self):
+
         weather_week = {}
         describe_date = self.soup.find_all("span", class_="show-for-medium")
         describe_day = self.soup.find_all("table")
