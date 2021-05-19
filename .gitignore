@@ -4,3 +4,4 @@ lib64/
 .idea/
 __pycache__/
 media/file.html
+token_bot

@@ -6,7 +6,7 @@ from config_data_base import update_db
 from web_request import Parser
 
 
-bot = telebot.TeleBot('1800951201:AAGQhthVpv5UBnQzlyqiu59zCDlFmAf3IQA')
+bot = telebot.TeleBot('меня сложно найти, легко потерять')
 
 
 @bot.callback_query_handler(func=lambda call: True)
