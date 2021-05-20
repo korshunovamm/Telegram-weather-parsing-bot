@@ -1,3 +1,4 @@
+import os
 import telebot
 import threading
 import time
@@ -5,8 +6,7 @@ import schedule
 from config_data_base import update_db
 from web_request import Parser
 
-
-bot = telebot.TeleBot('меня сложно найти, легко потерять')
+bot = telebot.TeleBot(os.environ["MY_TOKEN_BOT"])
 url_site = 'https://www.meteoservice.ru/weather/week/moskva'
 
 
@@ -16,9 +16,7 @@ def callback_worker(call):
     if call.data == "week":  # call.data это callback_data, которую мы указали при объявлении кнопки
         try:
             week = Parser(url_site).find_weather_week()
-            str_week = ''
-            for key, value in week.items():
-                str_week += f'{str_week} {key}\n{value}\n\n'
+            str_week = "".join([f'{key}\n{value}\n\n' for key, value in week.items()])
         except Exception as e:
             str_week = e
         bot.send_message(call.message.chat.id, str_week)
@@ -52,8 +50,8 @@ def keyboard_get_weather_of_day(message):
     key_day_1 = telebot.types.InlineKeyboardButton(text='Погода на завтра', callback_data="1")
     keyboard.add(key_day_0, key_day_1)
 
-    for i in range(2, 6):
-        key_day = telebot.types.InlineKeyboardButton(text=day[0][i], callback_data=f"{i}")
+    for number_of_day in range(2, 6):
+        key_day = telebot.types.InlineKeyboardButton(text=day[0][number_of_day], callback_data=f"{number_of_day}")
         keyboard.add(key_day)
 
     keyboard.add(key_week_weather)

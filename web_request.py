@@ -44,6 +44,23 @@ class Parser:
         return weather_week
 
     def find_weather_day(self):
+        """
+        weather_day_date - список дат на неделю
+
+        weather_day_temperature - список из списков температур каждого дня на неделю
+        weather_day_temperature[i] - список, характеризующий температуру дня на i день,
+            где первый элемент этого списка описывает температуру ночью,
+            второй элемент описывает температуру утром,
+            третий элемент описывает температуру днем,
+            четвертый элемент описывает температуру вечером
+
+        weather_day_feeled_temperature - полностью аналогичный список предыдущему,
+        только описание идет как ощущается погода
+
+        weather_day_wind - полностью аналогичный список предыдущим двум,
+        только описание идет скорости ветра
+        """
+
         weather_day_date = []
         weather_day_temperature = []
         weather_day_feeled_temperature = []
@@ -60,9 +77,17 @@ class Parser:
             list_temperature = item.text.replace("\n", '').replace("  ", '').split('\t')
             list_temperature_describe = ["Температура воздуха ночью: ", "Температура воздуха утром: ",
                                          "Температура воздуха днем: ", "Температура воздуха вечером: "]
+
+            # из list_temperature, причем беру каждый по модулю четвертый элемент, так как в html
+            # формате сайта указаны еще по три числа под такими же tag'ом,
+            # которые на самом сайте не отображаются
             list_day_temperature = [list_temperature[i]
                                     for i in range(len(list_temperature))
                                     if list_temperature[i] != '' and i % 4 == 0 and i]
+            # делаю информацию о погоде читаемой:
+            # склеиваю описание температуры из list_temperature_describe
+            # с ее числовым значением из list_temperature
+            # in range(4) - т.к. погода описывается утром, днем, вечером и ночью
             weather_day_temperature.append(
                 [list_temperature_describe[i] + list_day_temperature[i] for i in range(4)])
 
@@ -72,9 +97,15 @@ class Parser:
             list_feeled_temperature_describe = ["Ощущается ночью: ", "Ощущается утром: ",
                                                 "Ощущается днем: ", "Ощущается вечером: "]
             if len(list_feeled_temperature) != 1:
+                # из list_feeled_temperature, причем беру каждый по модулю второй элемент, так как в html
+                # формате сайта указаны еще по одному числу под такими же tag'ом,
+                # которые на самом сайте не отображаются
                 list_day_feeled_temperature = [list_feeled_temperature[i] + "°"
                                                for i in range(len(list_feeled_temperature))
                                                if list_feeled_temperature[i] != '' and i % 2 != 0]
+                # делаю информацию о погоде читаемой:
+                # склеиваю описание ощущаемой температуры из list_feeled_temperature_describe
+                # с ее числовым значением из list_day_feeled_temperature
                 weather_day_feeled_temperature.append(
                     [list_feeled_temperature_describe[i] + list_day_feeled_temperature[i] for i in range(4)])
 
@@ -83,16 +114,15 @@ class Parser:
             list_wind = item.text.replace("  ", '').replace("\n", '').replace("Ветер", '').split("м/с")
             list_wind_describe = ["Ветер ночью: ", "Ветер утром: ",
                                   "Ветер днем: ", "Ветер вечером: "]
+            # из list_wind, причем беру каждый по модулю второй элемент, так как в html
+            # формате сайта указаны еще по одному числу под такими же tag'ом,
+            # которые на самом сайте не отображаются
             list_day_wind = [list_wind[i] + "м/с"
                              for i in range(len(list_wind))
                              if list_wind[i] != '' and i % 2 != 0]
+            # делаю информацию о погоде читаемой:
+            # склеиваю описание ветра из list_wind_describe с ее числовым значением
+            # из list_day_wind
             weather_day_wind.append([list_wind_describe[i] + list_day_wind[i] for i in range(4)])
 
         return [weather_day_date, weather_day_temperature, weather_day_feeled_temperature, weather_day_wind]
-
-#
-# try:
-#     list_of_dayss = Parser('https://www.meteoservice.ru/weather/week/moskva').find_weather_day()
-# except Exception as e:
-#     list_of_dayss = e
-# print(list_of_dayss)
