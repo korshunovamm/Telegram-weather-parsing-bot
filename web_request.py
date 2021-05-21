@@ -61,16 +61,13 @@ class Parser:
         только описание идет скорости ветра
         """
 
-        weather_day_date = []
         weather_day_temperature = []
         weather_day_feeled_temperature = []
         weather_day_wind = []
 
         describe_day = self.soup.find_all(["span"], {"class": ["show-for-medium"]})
-        for item in describe_day:
-            if item:
-                weather_day_date.append(item.text)
-                # print(item.text)
+        weather_day_date = [item.text for item in describe_day if item]
+        # print(item.text)
 
         describe_temperature = self.soup.find_all(["tr"], {"class": ["temperature"]})
         for item in describe_temperature:
@@ -78,12 +75,12 @@ class Parser:
             list_temperature_describe = ["Температура воздуха ночью: ", "Температура воздуха утром: ",
                                          "Температура воздуха днем: ", "Температура воздуха вечером: "]
 
-            # из list_temperature, причем беру каждый по модулю четвертый элемент, так как в html
+            # из list_temperature, причем беру каждый четвертый элемент, так как в html
             # формате сайта указаны еще по три числа под такими же tag'ом,
             # которые на самом сайте не отображаются
             list_day_temperature = [list_temperature[i]
-                                    for i in range(len(list_temperature))
-                                    if list_temperature[i] != '' and i % 4 == 0 and i]
+                                    for i in range(4, len(list_temperature), 4)
+                                    if list_temperature[i] != '']
             # делаю информацию о погоде читаемой:
             # склеиваю описание температуры из list_temperature_describe
             # с ее числовым значением из list_temperature
@@ -97,12 +94,12 @@ class Parser:
             list_feeled_temperature_describe = ["Ощущается ночью: ", "Ощущается утром: ",
                                                 "Ощущается днем: ", "Ощущается вечером: "]
             if len(list_feeled_temperature) != 1:
-                # из list_feeled_temperature, причем беру каждый по модулю второй элемент, так как в html
+                # из list_feeled_temperature, причем беру каждый второй элемент, так как в html
                 # формате сайта указаны еще по одному числу под такими же tag'ом,
                 # которые на самом сайте не отображаются
                 list_day_feeled_temperature = [list_feeled_temperature[i] + "°"
-                                               for i in range(len(list_feeled_temperature))
-                                               if list_feeled_temperature[i] != '' and i % 2 != 0]
+                                               for i in range(2, len(list_feeled_temperature), 2)
+                                               if list_feeled_temperature[i] != '']
                 # делаю информацию о погоде читаемой:
                 # склеиваю описание ощущаемой температуры из list_feeled_temperature_describe
                 # с ее числовым значением из list_day_feeled_temperature
@@ -114,7 +111,7 @@ class Parser:
             list_wind = item.text.replace("  ", '').replace("\n", '').replace("Ветер", '').split("м/с")
             list_wind_describe = ["Ветер ночью: ", "Ветер утром: ",
                                   "Ветер днем: ", "Ветер вечером: "]
-            # из list_wind, причем беру каждый по модулю второй элемент, так как в html
+            # из list_wind, причем беру каждый второй элемент, так как в html
             # формате сайта указаны еще по одному числу под такими же tag'ом,
             # которые на самом сайте не отображаются
             list_day_wind = [list_wind[i] + "м/с"

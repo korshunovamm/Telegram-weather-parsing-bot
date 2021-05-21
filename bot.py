@@ -3,11 +3,10 @@ import telebot
 import threading
 import time
 import schedule
-from config_data_base import update_db
+from config_data_base import update_db, url_site
 from web_request import Parser
 
 bot = telebot.TeleBot(os.environ["MY_TOKEN_BOT"])
-url_site = 'https://www.meteoservice.ru/weather/week/moskva'
 
 
 @bot.callback_query_handler(func=lambda call: True)
