@@ -115,8 +115,8 @@ class Parser:
             # формате сайта указаны еще по одному числу под такими же tag'ом,
             # которые на самом сайте не отображаются
             list_day_wind = [list_wind[i] + "м/с"
-                             for i in range(len(list_wind))
-                             if list_wind[i] != '' and i % 2 != 0]
+                             for i in range(1, len(list_wind), 2)
+                             if list_wind[i] != '']
             # делаю информацию о погоде читаемой:
             # склеиваю описание ветра из list_wind_describe с ее числовым значением
             # из list_day_wind
