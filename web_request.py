@@ -67,7 +67,7 @@ class Parser:
 
         describe_day = self.soup.find_all(["span"], {"class": ["show-for-medium"]})
         weather_day_date = [item.text for item in describe_day if item]
-        # print(item.text)
+        # print(weather_day_date[0])
 
         describe_temperature = self.soup.find_all(["tr"], {"class": ["temperature"]})
         for item in describe_temperature:
@@ -98,7 +98,7 @@ class Parser:
                 # формате сайта указаны еще по одному числу под такими же tag'ом,
                 # которые на самом сайте не отображаются
                 list_day_feeled_temperature = [list_feeled_temperature[i] + "°"
-                                               for i in range(2, len(list_feeled_temperature), 2)
+                                               for i in range(1, len(list_feeled_temperature), 2)
                                                if list_feeled_temperature[i] != '']
                 # делаю информацию о погоде читаемой:
                 # склеиваю описание ощущаемой температуры из list_feeled_temperature_describe
